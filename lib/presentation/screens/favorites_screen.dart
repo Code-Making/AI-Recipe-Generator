@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../providers/recipe_provider.dart';
 import 'recipe_detail_screen.dart';
+import '../widgets/custom_app_bar.dart';
 
 class FavoritesScreen extends ConsumerWidget {
   const FavoritesScreen({super.key});
@@ -25,7 +26,7 @@ class FavoritesScreen extends ConsumerWidget {
     };
 
     return Scaffold(
-      appBar: AppBar(title: const Text("My Favorites")),
+      appBar: const CustomAppBar(title: 'My Favorites'),
       body: favorites.when(
         data: (recipes) {
           if (recipes.isEmpty) {

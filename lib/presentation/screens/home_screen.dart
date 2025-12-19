@@ -5,8 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_constants.dart';
 import '../providers/recipe_provider.dart';
 import 'recipe_list_screen.dart';
-import 'favorites_screen.dart';
+
 import 'loading_screen.dart';
+import '../widgets/custom_app_bar.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -81,29 +82,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppConstants.appName),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.favorite),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const FavoritesScreen()),
-              );
-            },
-          ),
-          IconButton(
-            icon: Icon(theme.brightness == Brightness.dark
-                ? Icons.light_mode
-                : Icons.dark_mode),
-            onPressed: () {
-              ref.read(themeModeNotifierProvider.notifier).toggle();
-            },
-          ),
-        ],
-      ),
+      appBar: const CustomAppBar(title: AppConstants.appName),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

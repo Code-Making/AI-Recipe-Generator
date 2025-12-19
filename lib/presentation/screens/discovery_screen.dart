@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../widgets/custom_app_bar.dart';
 
 class DiscoveryScreen extends StatelessWidget {
   const DiscoveryScreen({super.key});
@@ -16,7 +17,7 @@ class DiscoveryScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Discover')),
+      appBar: const CustomAppBar(title: 'Discover'),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

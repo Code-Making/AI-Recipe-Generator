@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/recipe_provider.dart';
 import '../../core/constants/app_constants.dart';
 import 'onboarding_screen.dart';
+import '../widgets/custom_app_bar.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -10,7 +11,7 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: const CustomAppBar(title: 'Settings'),
       body: ListView(
         children: [
           SwitchListTile(
