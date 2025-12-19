@@ -104,23 +104,44 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   bottomRight: Radius.circular(30),
                 ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
                 children: [
-                  Text(
-                    "What's in your\nkitchen?",
-                    style: GoogleFonts.cairo(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      height: 1.2,
+                  // Image on Left
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.asset(
+                      'assets/images/home_banner.png',
+                      height: 120,
+                      width: 120,
+                      fit: BoxFit.cover,
                     ),
-                  ).animate().fadeIn().moveX(begin: -20, end: 0),
-                  const SizedBox(height: 8),
-                  Text(
-                    "We'll help you cook something amazing.",
-                    style: TextStyle(color: Colors.white.withOpacity(0.9)),
-                  ).animate().fadeIn(delay: 200.ms),
+                  ).animate().scale(delay: 200.ms),
+                  const SizedBox(width: 16),
+                  // Text on Right
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "What's in your\nkitchen?",
+                          style: GoogleFonts.cairo(
+                            fontSize: 26, // Reduced slightly to fit
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            height: 1.2,
+                          ),
+                        ).animate().fadeIn().moveX(begin: 20, end: 0),
+                        const SizedBox(height: 8),
+                        Text(
+                          "We'll help you cook something amazing.",
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 13,
+                          ),
+                        ).animate().fadeIn(delay: 400.ms),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
