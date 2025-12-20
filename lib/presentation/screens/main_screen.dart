@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 
 import 'home_screen.dart';
-import 'discovery_screen.dart';
+import 'suggestions_screen.dart';
 import 'favorites_screen.dart';
 import 'settings_screen.dart';
 
@@ -19,7 +19,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = const [
     HomeScreen(),
-    DiscoveryScreen(),
+    SuggestionsScreen(),
     FavoritesScreen(),
     SettingsScreen(),
   ];
@@ -73,9 +73,9 @@ class _MainScreenState extends State<MainScreen> {
               label: 'Home',
             ),
             NavigationDestination(
-              icon: Icon(Icons.explore_outlined),
-              selectedIcon: Icon(Icons.explore),
-              label: 'Discover',
+              icon: Icon(Icons.auto_awesome_outlined),
+              selectedIcon: Icon(Icons.auto_awesome),
+              label: 'Suggestions',
             ),
             NavigationDestination(
               icon: Icon(Icons.favorite_border),

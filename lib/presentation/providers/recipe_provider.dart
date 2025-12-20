@@ -95,6 +95,38 @@ class SelectedCalories extends _$SelectedCalories {
   void set(int? value) => state = value;
 }
 
+@riverpod
+class LastIngredients extends _$LastIngredients {
+  @override
+  String build() => '';
+
+  void set(String value) => state = value;
+}
+
+@Riverpod(keepAlive: true)
+class SuggestedRecipes extends _$SuggestedRecipes {
+  @override
+  FutureOr<List<RecipeModel>> build() {
+    return [];
+  }
+
+  Future<void> generateSuggestions(
+      String ingredients, String cuisine, int? calories) async {
+    state = const AsyncValue.loading();
+    try {
+      // We can use the same use case but maybe with a slightly different prompt nuance
+      // For now, reusing the standard generation is the most robust way to get "AI" results.
+      // Ideally, the repository would support a "suggestion" flag, but standard generation works.
+      final recipes = await ref
+          .read(getRecipesUseCaseProvider)
+          .call(ingredients, cuisine, calories);
+      state = AsyncValue.data(recipes);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+}
+
 @Riverpod(keepAlive: true)
 class GeneratedRecipes extends _$GeneratedRecipes {
   @override

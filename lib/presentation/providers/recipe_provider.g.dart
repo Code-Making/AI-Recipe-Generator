@@ -204,6 +204,38 @@ final selectedCaloriesProvider =
 );
 
 typedef _$SelectedCalories = AutoDisposeNotifier<int?>;
+String _$lastIngredientsHash() => r'e32ef63bad30ad28b091ec37eb6d2b40453777bb';
+
+/// See also [LastIngredients].
+@ProviderFor(LastIngredients)
+final lastIngredientsProvider =
+    AutoDisposeNotifierProvider<LastIngredients, String>.internal(
+  LastIngredients.new,
+  name: r'lastIngredientsProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$lastIngredientsHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$LastIngredients = AutoDisposeNotifier<String>;
+String _$suggestedRecipesHash() => r'8e6175308269cb96584aebec3d30d120ecba47d3';
+
+/// See also [SuggestedRecipes].
+@ProviderFor(SuggestedRecipes)
+final suggestedRecipesProvider =
+    AsyncNotifierProvider<SuggestedRecipes, List<RecipeModel>>.internal(
+  SuggestedRecipes.new,
+  name: r'suggestedRecipesProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$suggestedRecipesHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$SuggestedRecipes = AsyncNotifier<List<RecipeModel>>;
 String _$generatedRecipesHash() => r'a924198815b3d910b8295df75dd530ea1e71fa95';
 
 /// See also [GeneratedRecipes].
