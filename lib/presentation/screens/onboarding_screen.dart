@@ -42,7 +42,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     super.initState();
     _timerController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 5),
+      duration: const Duration(seconds: 7),
     );
 
     _timerController.addStatusListener((status) {

@@ -137,16 +137,24 @@ class _SuggestionsScreenState extends ConsumerState<SuggestionsScreen> {
                     }
 
                     final recipe = recipes[index - 1];
+                    final isDark =
+                        Theme.of(context).brightness == Brightness.dark;
+
                     return Container(
                       margin: const EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1E1E1E), // Dark card surface
+                        color: isDark
+                            ? const Color(0xFF1E1E1E)
+                            : Colors.white, // Adapted
                         borderRadius: BorderRadius.circular(20),
-                        border:
-                            Border.all(color: Colors.white.withOpacity(0.05)),
+                        border: Border.all(
+                            color: isDark
+                                ? Colors.white.withOpacity(0.05)
+                                : Colors.grey.withOpacity(0.1)),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color:
+                                Colors.black.withOpacity(isDark ? 0.2 : 0.05),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -197,7 +205,9 @@ class _SuggestionsScreenState extends ConsumerState<SuggestionsScreen> {
                                       recipe.difficulty,
                                       style: GoogleFonts.cairo(
                                         fontSize: 12,
-                                        color: Colors.grey[500],
+                                        color: isDark
+                                            ? Colors.grey[500]
+                                            : Colors.grey[600],
                                       ),
                                     ),
                                   ],
@@ -210,7 +220,8 @@ class _SuggestionsScreenState extends ConsumerState<SuggestionsScreen> {
                                     fontSize: 20, // Prominent title
                                     fontWeight: FontWeight.bold,
                                     height: 1.2,
-                                    color: Colors.white,
+                                    color:
+                                        isDark ? Colors.white : Colors.black87,
                                   ),
                                 ),
                                 const SizedBox(height: 16),
