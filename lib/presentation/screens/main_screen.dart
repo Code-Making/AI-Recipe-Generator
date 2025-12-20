@@ -66,15 +66,18 @@ class _MainScreenState extends State<MainScreen> {
               _currentIndex = index;
             });
           },
-          destinations: const [
+          destinations: [
             NavigationDestination(
               icon: Icon(Icons.home_outlined),
               selectedIcon: Icon(Icons.home_filled),
               label: 'Home',
             ),
             NavigationDestination(
-              icon: Icon(Icons.auto_awesome_outlined),
-              selectedIcon: Icon(Icons.auto_awesome),
+              icon: Image.asset(
+                'assets/images/home_banner.png',
+                width: 30,
+                height: 30,
+              ),
               label: 'Suggestions',
             ),
             NavigationDestination(

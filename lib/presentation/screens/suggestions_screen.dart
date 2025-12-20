@@ -57,8 +57,10 @@ class _SuggestionsScreenState extends ConsumerState<SuggestionsScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.auto_awesome_outlined,
-                      size: 80, color: Colors.grey[400]),
+                  Image.asset(
+                    'assets/images/home_banner.png',
+                    height: 120,
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     "No suggestions yet!",
