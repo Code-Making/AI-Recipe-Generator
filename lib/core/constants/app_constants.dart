@@ -14,8 +14,9 @@ class AppConstants {
       'https://generativelanguage.googleapis.com/v1beta/models/';
 
   static const List<String> geminiModels = [
-    'gemini-2.5-flash-lite', // Standard / Default
     'gemini-2.5-flash',
+    'gemini-2.5-flash-lite',
+    'gemini-3-flash',
   ];
 
   // Strings (Arabic)

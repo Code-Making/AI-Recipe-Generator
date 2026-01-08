@@ -47,8 +47,8 @@ class RecipeRemoteDataSourceImpl implements RecipeRemoteDataSource {
       try {
         return await _makeRequest(endpointUrl, prompt);
       } on DioException catch (e) {
-        if (e.response?.statusCode == 429) {
-          // Rate limit exceeded, force rotate and retry once
+        if (e.response?.statusCode == 429 || e.response?.statusCode == 503) {
+          // Rate limit or overloaded, force rotate and retry once
           final newEndpointUrl =
               await _getAndRotateEndpoint(apiKey, forceRotate: true);
           return await _makeRequest(newEndpointUrl, prompt);
@@ -80,66 +80,8 @@ class RecipeRemoteDataSourceImpl implements RecipeRemoteDataSource {
 
     if (response.statusCode == 200) {
       final data = response.data;
-      String contentText = data['candidates'][0]['content']['parts'][0]['text'];
-
-      // Robust JSON extraction
-      final jsonStartIndex = contentText.indexOf('{');
-      final listStartIndex = contentText.indexOf('[');
-
-      int startIndex = -1;
-
-      // Determine if we should look for an object or a list
-      if (jsonStartIndex != -1 && listStartIndex != -1) {
-        startIndex =
-            jsonStartIndex < listStartIndex ? jsonStartIndex : listStartIndex;
-      } else if (jsonStartIndex != -1) {
-        startIndex = jsonStartIndex;
-      } else if (listStartIndex != -1) {
-        startIndex = listStartIndex;
-      }
-
-      if (startIndex != -1) {
-        // Find the last closing bracket
-        final jsonEndIndex = contentText.lastIndexOf('}');
-        final listEndIndex = contentText.lastIndexOf(']');
-
-        int endIndex = -1;
-        if (jsonEndIndex != -1 && listEndIndex != -1) {
-          endIndex = jsonEndIndex > listEndIndex ? jsonEndIndex : listEndIndex;
-        } else if (jsonEndIndex != -1) {
-          endIndex = jsonEndIndex;
-        } else if (listEndIndex != -1) {
-          endIndex = listEndIndex;
-        }
-
-        if (endIndex != -1 && endIndex > startIndex) {
-          contentText = contentText.substring(startIndex, endIndex + 1);
-        }
-      }
-
-      final dynamic jsonResponse = jsonDecode(contentText);
-
-      List<dynamic> jsonList;
-      if (jsonResponse is List) {
-        jsonList = jsonResponse;
-      } else if (jsonResponse is Map && jsonResponse.containsKey('recipes')) {
-        // Handle case where AI wraps it in {"recipes": [...]}
-        jsonList = jsonResponse['recipes'];
-      } else if (jsonResponse is Map) {
-        // Try to find any list in values
-        final entry = jsonResponse.values
-            .firstWhere((v) => v is List, orElse: () => null);
-        if (entry != null) {
-          jsonList = entry;
-        } else {
-          throw FormatException(
-              "Unexpected JSON format: not a list or object with list");
-        }
-      } else {
-        throw FormatException(
-            "Unexpected JSON type: ${jsonResponse.runtimeType}");
-      }
-
+      final contentText = data['candidates'][0]['content']['parts'][0]['text'];
+      final jsonList = _extractJson(contentText);
       return jsonList.map((json) => RecipeModel.fromJson(json)).toList();
     } else if (response.statusCode == 429) {
       // Rethrow to be caught by the outer loop for rotation
@@ -176,7 +118,7 @@ class RecipeRemoteDataSourceImpl implements RecipeRemoteDataSource {
     int requestCount = box.get('request_count', defaultValue: 0) as int;
 
     // Check rotation condition
-    bool shouldRotate = forceRotate || requestCount >= 15;
+    bool shouldRotate = forceRotate || requestCount >= 10;
 
     if (shouldRotate) {
       currentModelIndex =
@@ -198,6 +140,79 @@ class RecipeRemoteDataSourceImpl implements RecipeRemoteDataSource {
 
     final modelName = AppConstants.geminiModels[currentModelIndex];
     return '${AppConstants.geminiBaseUrl}$modelName:generateContent?key=$apiKey';
+  }
+
+  List<dynamic> _extractJson(String contentText) {
+    // 1. Remove markdown code blocks
+    contentText = contentText.replaceAll(RegExp(r'```json|```'), '').trim();
+
+    // 2. Find JSON start
+    final jsonStartIndex = contentText.indexOf('{');
+    final listStartIndex = contentText.indexOf('[');
+
+    int startIndex = -1;
+
+    if (jsonStartIndex != -1 && listStartIndex != -1) {
+      startIndex =
+          jsonStartIndex < listStartIndex ? jsonStartIndex : listStartIndex;
+    } else if (jsonStartIndex != -1) {
+      startIndex = jsonStartIndex;
+    } else if (listStartIndex != -1) {
+      startIndex = listStartIndex;
+    }
+
+    if (startIndex != -1) {
+      int counter = 0;
+      int endIndex = -1;
+      final startChar = contentText[startIndex];
+      final endChar = startChar == '{' ? '}' : ']';
+
+      for (int i = startIndex; i < contentText.length; i++) {
+        final char = contentText[i];
+        if (char == startChar) {
+          counter++;
+        } else if (char == endChar) {
+          counter--;
+          if (counter == 0) {
+            endIndex = i;
+            break;
+          }
+        }
+      }
+
+      if (endIndex != -1) {
+        contentText = contentText.substring(startIndex, endIndex + 1);
+      }
+    }
+
+    try {
+      final dynamic jsonResponse = jsonDecode(contentText);
+
+      List<dynamic> jsonList;
+      if (jsonResponse is List) {
+        jsonList = jsonResponse;
+      } else if (jsonResponse is Map && jsonResponse.containsKey('recipes')) {
+        // Handle case where AI wraps it in {"recipes": [...]}
+        jsonList = jsonResponse['recipes'];
+      } else if (jsonResponse is Map) {
+        // Try to find any list in values
+        final entry = jsonResponse.values
+            .firstWhere((v) => v is List, orElse: () => null);
+        if (entry != null) {
+          jsonList = entry;
+        } else {
+          throw FormatException(
+              "Unexpected JSON format: not a list or object with list");
+        }
+      } else {
+        throw FormatException(
+            "Unexpected JSON type: ${jsonResponse.runtimeType}");
+      }
+      return jsonList;
+    } catch (e) {
+      print("JSON Parse Error on content: $contentText");
+      rethrow;
+    }
   }
 
   List<RecipeModel> _generateMockRecipes(
